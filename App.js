@@ -1,20 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
+import GameStartScreen from "./screens/GameStartScreen";
+import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
+import GameScreen from "./screens/GameScreen";
 
 export default function App() {
+  const [validation, setValidation] = useState();
+  function handleValidation(checkNum) {
+    setValidation(checkNum);
+  }
+  let screen = <GameStartScreen onPickedNum={handleValidation} />;
+  if (validation) return (screen = <GameScreen />);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <LinearGradient
+      colors={["#0D1953", "#1C34B0"]}
+      style={styles.rootContainer}
+    >
+      <ImageBackground
+        source={require("./assets/images/bgImg.jpg")}
+        imageStyle={styles.bgImg}
+        resizeMode="cover"
+        style={styles.rootContainer}
+      >
+        <SafeAreaView>{screen}</SafeAreaView>
+      </ImageBackground>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  rootContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  bgImg: {
+    opacity: 0.8,
   },
 });
