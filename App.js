@@ -3,15 +3,43 @@ import GameStartScreen from "./screens/GameStartScreen";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import GameScreen from "./screens/GameScreen";
+import GameOverScreen from "./screens/GameOverScreen";
+import { useFonts } from "expo-font";
+import AppLoading from "expo-app-loading";
 
 export default function App() {
+  const [fontsLoading] = useFonts(
+    { "open-sans": require("./assets/fonts/OpenSans-Regular.ttf") },
+    { "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf") }
+  );
+  if (!fontsLoading) return <AppLoading />;
+
   const [validation, setValidation] = useState();
+  const [isGameOver, setIsGameOver] = useState(true);
+  const [roundNum, setRoundNum] = useState(0);
   function handleValidation(checkNum) {
     setValidation(checkNum);
+    setIsGameOver(false);
+  }
+  function resetHandler() {
+    setValidation(null);
+    setRoundNum(0);
+  }
+  function handleGameOver() {
+    setIsGameOver(true);
   }
   let screen = <GameStartScreen onPickedNum={handleValidation} />;
-  if (validation) return (screen = <GameScreen />);
+  if (validation)
+    screen = <GameScreen userNum={validation} gameOver={handleGameOver} />;
 
+  if (isGameOver && validation)
+    screen = (
+      <GameOverScreen
+        roundsNum={roundNum}
+        userNum={validation}
+        resetHandler={resetHandler}
+      />
+    );
   return (
     <LinearGradient
       colors={["#0D1953", "#1C34B0"]}
@@ -23,7 +51,7 @@ export default function App() {
         resizeMode="cover"
         style={styles.rootContainer}
       >
-        <SafeAreaView>{screen}</SafeAreaView>
+        <SafeAreaView style={styles.rootContainer}>{screen}</SafeAreaView>
       </ImageBackground>
     </LinearGradient>
   );
@@ -32,6 +60,7 @@ export default function App() {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
+    fontFamily: "open-sans-bold",
   },
   bgImg: {
     opacity: 0.8,
